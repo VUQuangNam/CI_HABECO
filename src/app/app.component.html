@@ -46,7 +46,7 @@
                             data-parent="#accordion"
                             [href]="i.href"
                             aria-expanded="false"
-                        >{{i.ScanId}}</a>
+                        >{{i.ScanId}} Số lượng:{{i.ItemNumber}}</a>
                     </h5>
                 </div>
                 <div
@@ -55,15 +55,22 @@
                 >
                     <table class="table table-borderless table-striped doc-table">
                         <tbody>
-                            <tr *ngFor="let item of i.dataSub">
+                            <tr
+                                data-toggle="modal"
+                                data-target="#exampleModalCenter"
+                                *ngFor="let item of i.dataSub"
+                                (click)="onLoadListScan(item)"
+                            >
                                 <td class="text-500">
-                                    {{item.Serial}}
+                                    ScanId: {{item?.ScanId}}
                                 </td>
-                                <td class="text-nowrap">{{item.CreatedOn | date:'dd-MM-yyyy HH:mm'}}</td>
-                                <td class="text-nowrap">{{item.ExpiredOn | date:'dd-MM-yyyy HH:mm'}}</td>
-                                <td>
-                                    <img class="h-50px" src="../assets/photo/1617761839.svg">
+                                <td class="text-500">
+                                    ItemId: {{item?.ItemId}}
                                 </td>
+                                <td class="text-500">
+                                    ScanItemId: {{item?.ScanItemId}}
+                                </td>
+                                <td class="text-nowrap">CreatedOn: {{item.CreatedOn | date:'dd-MM-yyyy HH:mm'}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -101,3 +108,51 @@
         </div>
     </div>
 </footer>
+<div
+    class="modal fade"
+    id="exampleModalCenter"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true"
+>
+    <div
+        class="modal-dialog modal-dialog-centered"
+        role="document"
+    >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5
+                    class="modal-title"
+                    id="exampleModalLongTitle"
+                >Thông tin sản phẩm</h5>
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Serial: {{itemDetail?.Serial}}
+                <br>
+                ItemId: {{itemDetail?.ItemId}}
+                <br>
+                ExpiredOn: {{itemDetail?.ExpiredOn | date:'dd-MM-yyyy'}}
+                <br>
+                CreatedOn: {{itemDetail?.CreatedOn | date:'dd-MM-yyyy'}}
+                <br>
+                MediaURL: <img
+                    *ngIf="itemDetail.MediaURL"
+                    src="itemDetail.MediaURL"
+                >
+                <img
+                    *ngIf="!itemDetail.MediaURL"
+                    src="assets/photo/1617761839.svg"
+                >
+            </div>
+        </div>
+    </div>
+</div>
