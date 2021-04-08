@@ -7,7 +7,7 @@ import { from, Observable } from 'rxjs';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
     title = 'habeco';
 
     constructor(
@@ -35,37 +35,39 @@ export class AppComponent implements OnInit, AfterViewInit {
                         ItemNumber: x.ItemNumber
                     }
                 });
-                this.itemDetail = this.historyData.map(x => { return x.id });
+                setInterval(() => {
+                    this.itemDetail = this.historyData.map(x => { return x.ScanId });
+                    console.log(this.itemDetail);
+                    this.http.get(`https://mxupvjfqlh.execute-api.ap-southeast-1.amazonaws.com/prod/scan?pageNumber=1&pageSize=20`)
+                        .subscribe((res: any) => {
+                            res.payload = res.payload || [];
+                            this.fetch$ = from(res.payload.map(x => {
+                                return {
+                                    ScanId: x.ScanId,
+                                    CreatedOn: x.CreatedOn,
+                                    href: '#collapse1-' + x.ScanId,
+                                    id: 'collapse1-' + x.ScanId,
+                                    dataSub: [],
+                                    ItemNumber: x.ItemNumber
+                                }
+                            }));
+                            this.fetch$.subscribe(res => {
+                                this.templateMessage(res);
+                            })
+                        })
+                }, 5000);
+
+
             })
 
 
     }
-    ngAfterViewInit() {
-        setInterval(() => {
-            this.http.get(`https://mxupvjfqlh.execute-api.ap-southeast-1.amazonaws.com/prod/scan?pageNumber=1&pageSize=20`)
-                .subscribe((res: any) => {
-                    res.payload = res.payload || [];
-                    this.fetch$ = from(res.payload.map(x => {
-                        return {
-                            ScanId: x.ScanId,
-                            CreatedOn: x.CreatedOn,
-                            href: '#collapse1-' + x.ScanId,
-                            id: 'collapse1-' + x.ScanId,
-                            dataSub: [],
-                            ItemNumber: x.ItemNumber
-                        }
-                    }));
-                    this.fetch$.subscribe(res => {
-                        if (this.itemDetail.includes(res.id)) {
-                            this.templateMessage(res);
-                        }
-                    })
-                })
-        }, 5000);
-    }
 
     templateMessage(res) {
-        this.historyData = [res].concat(this.historyData).slice(0, 20);
+        if (!this.itemDetail.includes(res.ScanId)) {
+            this.itemDetail.push(res.ScanId);
+            this.historyData = [res].concat(this.historyData)
+        }
     }
 
 
