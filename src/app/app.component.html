@@ -29,10 +29,11 @@
     <div class="container">
         <h2 class="section__title text-dark">Danh sách Scan</h2>
         <div
+            #parentElement
             class="accordion custom-accordion-style-1"
             id="accordion"
             style="width:100%"
-            *ngFor="let i of listData"
+            *ngFor="let i of historyData"
         >
             <div class="card card-default">
                 <div
